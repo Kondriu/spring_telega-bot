@@ -29,7 +29,7 @@ public class UpdateConsumer implements LongPollingSingleThreadUpdateConsumer {
     private final TelegramClient telegramClient;
 
     public UpdateConsumer() {
-        this.telegramClient = new OkHttpTelegramClient("8663172762:AAEBKxGiY2FUYBsuj-zHsMDyptiLJlYGpZA");
+        this.telegramClient = new OkHttpTelegramClient("");
     }
 
 
