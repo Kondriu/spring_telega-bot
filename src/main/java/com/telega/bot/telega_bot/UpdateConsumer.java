@@ -10,14 +10,16 @@ import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -40,6 +42,12 @@ public class UpdateConsumer implements LongPollingSingleThreadUpdateConsumer {
 
             if (messageTxt.equals("/start")) {
                 sendMainMenu(chatId);
+            } else if (messageTxt.equals("/keys")) {
+                sendReplyKeyboard(chatId);
+            }             else if (messageTxt.equals("Hello")) {
+                sentMyName(chatId, update.getMessage().getFrom());
+            }             else if (messageTxt.equals(".image")) {
+                sentImage(chatId);
             } else {
                 SendMessage message = SendMessage.builder()
                         .text("My no undustood")
@@ -57,13 +65,34 @@ public class UpdateConsumer implements LongPollingSingleThreadUpdateConsumer {
 
     }
 
+    private void sendReplyKeyboard(Long chatId) {
+        SendMessage message = SendMessage.builder()
+                .chatId(chatId.toString())
+                .text("keyboard")
+                .build();
+
+
+        List<KeyboardRow> keyboardRows = new ArrayList<>();
+        KeyboardRow row1 = new KeyboardRow("Hello", ".image");
+        keyboardRows.add(row1);
+        ReplyKeyboardMarkup markup = new ReplyKeyboardMarkup(keyboardRows);
+        markup.setResizeKeyboard(true);
+
+        message.setReplyMarkup(markup);
+        try {
+            telegramClient.execute(message);
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private void handleCallbackQuery(CallbackQuery callbackQuery) {
         var data = callbackQuery.getData();
         var chatId = callbackQuery.getFrom().getId();
         var userName = callbackQuery.getFrom().getUserName();
         User user = callbackQuery.getFrom();
 
-        switch(data){
+        switch (data) {
             case "my_name" -> sentMyName(chatId, user);
             case "random" -> sentRandom(chatId);
             case "long_process" -> sentImage(chatId);
@@ -85,8 +114,8 @@ public class UpdateConsumer implements LongPollingSingleThreadUpdateConsumer {
 
     private void sentImage(Long chatId) {
         sentMessage(chatId, "Sending image...");
-        new Thread(() ->{
-            var imageUrl = "https://picsum.photos/300";
+        new Thread(() -> {
+            var imageUrl = "https://picsum.photos/800";
             try {
                 URL url = new URL(imageUrl);
                 var inputStream = url.openStream();
@@ -102,7 +131,7 @@ public class UpdateConsumer implements LongPollingSingleThreadUpdateConsumer {
             } catch (TelegramApiException | IOException e) {
                 throw new RuntimeException(e);
             }
-            
+
         }).start();
 
     }
