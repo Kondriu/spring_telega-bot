@@ -15,8 +15,7 @@ public class MyTelegramBot implements SpringLongPollingBot {
 
     @Override
     public String getBotToken() {
-        //https://t.me/MaximusPicBot
-        return "8663172762:AAEBKxGiY2FUYBsuj-zHsMDyptiLJlYGpZA";
+        return "";
     }
 
     @Override
